@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trivia Game</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+  <div class="max-w-md bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Trivia Game</h1>
+    <div id="question" class="text-lg text-gray-700 mb-4"></div>
+    <div id="options" class="grid grid-cols-1 gap-4"></div>
+    <button id="answer-btn" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">Answer</button>
+    <button id="next-btn" class="bg-blue-500 text-white px-4 py-2 rounded-md mt-2 hidden">Next</button>
+    <div id="result" class="text-lg text-gray-700 mt-4"></div>
+    <div id="players" class="mt-8"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: 'What is the capital of France?',
+        options: ['Paris', 'London', 'Berlin', 'Rome'],
+        answer: 'Paris'
+      },
+      {
+        question: 'Who painted the Mona Lisa?',
+        options: ['Leonardo da Vinci', 'Vincent van Gogh', 'Pablo Picasso', 'Michelangelo'],
+        answer: 'Leonardo da Vinci'
+      },
+      // Add more questions
+    ];
+
+    let currentQuestion = 0;
+    let currentPlayer = 1;
+    let scores = {
+      1: 0,
+      2: 0,
+      3: 0
+    };
+
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const answerBtn = document.getElementById('answer-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const resultElement = document.getElementById('result');
+    const playersElement = document.getElementById('players');
+
+    function showQuestion() {
+      questionElement.textContent = questions[currentQuestion].question;
+      optionsElement.innerHTML = '';
+      questions[currentQuestion].options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.classList.add('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800', 'px-4', 'py-2', 'rounded-md');
+        button.addEventListener('click', checkAnswer);
+        optionsElement.appendChild(button);
+      });
+    }
+
+    function checkAnswer(event) {
+      const selectedAnswer = event.target.textContent;
+      if (selectedAnswer === questions[currentQuestion].answer) {
+        resultElement.textContent = 'Correct!';
+        scores[currentPlayer]++;
+      } else {
+        resultElement.textContent = 'Incorrect. The correct answer is: ' + questions[currentQuestion].answer;
+      }
+      optionsElement.innerHTML = '';
+      answerBtn.style.display = 'none';
+      nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+        resultElement.textContent = '';
+        answerBtn.style.display = 'block';
+        nextBtn.style.display = 'none';
+      } else {
+        questionElement.textContent = 'Quiz completed!';
+        optionsElement.innerHTML = '';
+        answerBtn.style.display = 'none';
+        nextBtn.style.display = 'none';
+        resultElement.textContent = '';
+
+        Object.keys(scores).forEach(player => {
+          const playerScore = document.createElement('p');
+          playerScore.textContent = `Player ${player} Score: ${scores[player]}`;
+          playersElement.appendChild(playerScore);
+        });
+      }
+    }
+
+    showQuestion();
+
+    answerBtn.addEventListener('click', checkAnswer);
+    nextBtn.addEventListener('click', nextQuestion);
+  </script>
+</body>
+</html>
